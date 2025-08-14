@@ -1,0 +1,104 @@
+import java.util.Scanner;
+
+
+public class WordsWithLength2D {
+
+
+    // Method to find length of String without using length()
+    public static int findLengthWithoutLengthMethod(String str) {
+        int count = 0;
+        try {
+            while (true) {
+                str.charAt(count); // throws exception if out of range
+                count++;
+            }
+        } catch (StringIndexOutOfBoundsException e) {
+            // End of string
+        }
+        return count;
+    }
+
+
+    // Method to split string manually into words (no built-in split)
+    public static String[] customSplit(String text) {
+        int length = findLengthWithoutLengthMethod(text);
+
+
+        // Count words - multiple spaces handled
+        int wordCount = 0;
+        boolean inWord = false;
+        for (int i = 0; i < length; i++) {
+            if (text.charAt(i) != ' ' && !inWord) {
+                inWord = true;
+                wordCount++;
+            } else if (text.charAt(i) == ' ') {
+                inWord = false;
+            }
+        }
+
+
+        // Extract words
+        String[] words = new String[wordCount];
+        int start = -1, index = 0;
+        for (int i = 0; i < length; i++) {
+            if (text.charAt(i) != ' ' && start == -1) {
+                start = i; // start of word
+            }
+            if ((text.charAt(i) == ' ' || i == length - 1) && start != -1) {
+                int end = (i == length - 1 && text.charAt(i) != ' ') ? i + 1 : i;
+                String word = "";
+                for (int j = start; j < end; j++) {
+                    word += text.charAt(j);
+                }
+                words[index++] = word;
+                start = -1;
+            }
+        }
+        return words;
+    }
+
+
+    // Method to create 2D array [word, length_as_String]
+    public static String[][] getWordsWithLengths(String[] words) {
+        String[][] result = new String[words.length][2];
+        for (int i = 0; i < words.length; i++) {
+            result[i][0] = words[i];
+            int len = findLengthWithoutLengthMethod(words[i]);
+            result[i][1] = String.valueOf(len); // store length as String
+        }
+        return result;
+    }
+
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+
+        // Take input
+        System.out.print("Enter text: ");
+        String input = sc.nextLine();
+
+
+        // Get words from custom split
+        String[] words = customSplit(input);
+
+
+        // Convert to 2D array with lengths
+        String[][] wordsWithLengths = getWordsWithLengths(words);
+
+
+        // Display table
+        System.out.println("\nWord\t\tLength");
+        System.out.println("-----------------------");
+        for (int i = 0; i < wordsWithLengths.length; i++) {
+            String word = wordsWithLengths[i][0];
+            int length = Integer.parseInt(wordsWithLengths[i][1]); // convert back to int
+            System.out.println(word + "\t\t" + length);
+        }
+
+
+        sc.close();
+    }
+}
+
+
