@@ -1,0 +1,97 @@
+import java.util.*;
+
+public class TextProcessor {
+
+    // Clean and validate input
+    public static String cleanInput(String in) {
+        if (in == null || in.trim().isEmpty()) {
+            return "";
+        }
+        String t = in.trim().replaceAll("\\s+", " ");
+        String[] w = t.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (String s : w) {
+            if (s.length() > 0) {
+                sb.append(Character.toUpperCase(s.charAt(0)))
+                        .append(s.substring(1).toLowerCase())
+                        .append(" ");
+            }
+        }
+        return sb.toString().trim();
+    }
+
+    // Analyze text statistics
+    public static void analyzeText(String txt) {
+        String[] w = txt.split("\\s+");
+        int wc = w.length;
+        int cc = txt.replace(" ", "").length();
+        int sc = txt.split("[.!?]").length;
+        String lw = "";
+        Map<Character, Integer> m = new HashMap<>();
+
+        for (String s : w) {
+            String sw = s.replaceAll("[^a-zA-Z]", "");
+            if (sw.length() > lw.length()) lw = sw;
+            for (char c : sw.toLowerCase().toCharArray()) {
+                m.put(c, m.getOrDefault(c, 0) + 1);
+            }
+        }
+
+        char mc = ' ';
+        int mf = 0;
+        for (var e : m.entrySet()) {
+            if (e.getValue() > mf) {
+                mc = e.getKey();
+                mf = e.getValue();
+            }
+        }
+
+        System.out.println("Words: " + wc);
+        System.out.println("Characters: " + cc);
+        System.out.println("Sentences: " + sc);
+        System.out.println("Longest word: " + lw);
+        System.out.println("Most common char: '" + mc + "' (" + mf + " times)");
+    }
+
+    // Return sorted array of words
+    public static String[] getWordsSorted(String t) {
+        t = t.replaceAll("[^a-zA-Z\\s]", "");
+        String[] w = t.split("\\s+");
+        Arrays.sort(w, String.CASE_INSENSITIVE_ORDER);
+        return w;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("=== TEXT PROCESSOR ===");
+        System.out.println("Enter a paragraph:");
+        String in = sc.nextLine();
+
+        String clean = cleanInput(in);
+        if (clean.isEmpty()) {
+            System.out.println("Invalid input!");
+            sc.close();
+            return;
+        }
+
+        System.out.println("\n--- ANALYSIS ---");
+        analyzeText(clean);
+
+        System.out.println("\n--- SORTED WORDS ---");
+        String[] sorted = getWordsSorted(clean);
+        System.out.println(Arrays.toString(sorted));
+
+        System.out.println("\nEnter word to search:");
+        String sw = sc.nextLine().trim();
+        boolean found = false;
+        for (String s : sorted) {
+            if (s.equalsIgnoreCase(sw)) {
+                found = true;
+                break;
+            }
+        }
+        System.out.println(found ? "Word found!" : "Word not found!");
+
+        sc.close();
+    }
+}
